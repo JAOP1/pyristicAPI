@@ -1,0 +1,3 @@
+{
+    "content": "def constraint1_beale(X: np.ndarray) -> bool:\n\tfor i in range(len(X)):\n\t\tif -4.5>X[i] or X[i] > 4.5:\n\t\t\treturn False\n\tconstraint1_beale.__doc__='x1: -4.5 <= {:.2f} <= 4.5 \n x2: -4.5 <= {:.2f} <= 4.5'.format(X[0],X[1])\n\treturn True\narray_constraints = [constraint1_beale]\n"
+}
