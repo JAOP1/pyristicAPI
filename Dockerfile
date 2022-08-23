@@ -10,4 +10,6 @@ COPY ./app /pyristic_api/app
 
 RUN mkdir app/optimization_problem && touch app/optimization_problem/__init__.py
 
+ENV PYTHONPATH=/pyristic_api/app
+
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]

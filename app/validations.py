@@ -4,7 +4,7 @@ Validations applied to the heuristic routes.
 import os
 import typing
 from fastapi import HTTPException
-from .settings import ROOT_PATH, LOCAL_FILE_STORAGE
+import settings
 
 class ValidateFiles:
     """
@@ -26,7 +26,7 @@ def validate_required_files(files: typing.List[str])->bool:
         -None.
     """
     for file in files:
-        file_path = os.path.join( ROOT_PATH, LOCAL_FILE_STORAGE, f'{file}.py')
+        file_path = os.path.join( settings.ROOT_PATH, settings.LOCAL_FILE_STORAGE, f'{file}.py')
         if not os.path.exists(file_path):
             raise HTTPException(
                     status_code= 404,
