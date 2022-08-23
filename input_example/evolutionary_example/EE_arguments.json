@@ -1,0 +1,37 @@
+{
+    "arguments_optimizer": {
+        "arguments":{
+            "generations":10,
+            "population_size": 70,
+            "offspring_size":70
+        }
+    },
+    "config_operators": {
+        "methods": {
+            "crossover_operator":{
+                "operator_name":"DiscreteCrossover",    
+                "parameters":[]
+            },
+            "mutation_operator":{
+                "operator_name":"SigmaMutator",
+                "parameters":[]
+            },
+            "survivor_selector":{
+                "operator_name":"MergeSelector",
+                "parameters":[]
+            },
+            "setter_invalid_solution":{
+                "operator_name":"ContinuosFixer",
+                "parameters":[[-4.5,4.5]]
+            },
+            "adaptive_crossover_operator": {
+                "operator_name":"IntermediateCrossover",
+                "parameters":[]
+            },
+            "adaptive_mutation_operator": {
+                "operator_name":"MultSigmaAdaptiveMutator",
+                "parameters": [2]
+            }
+        }
+    }   
+}

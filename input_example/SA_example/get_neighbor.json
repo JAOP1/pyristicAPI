@@ -1,0 +1,3 @@
+{
+    "content":"def get_neighbor(x : np.ndarray) -> np.ndarray:\n\tx_ = x.copy()\n\tN = len(x_)\n\tindex1 = random.randint(1, N-1)\n\tindex2 = random.randint(1, N-1)\n\twhile index2 == index1:\n\t\tindex2 = random.randint(1, N-1)\n\tv = x[index1]\n\tx_ = list(x_[v != x_])\n\tx_ = x_[:index2] + [v] + x_[index2:]\n\treturn np.array(x_)"
+}

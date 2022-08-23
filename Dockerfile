@@ -8,8 +8,8 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY ./app /pyristic_api/app
 
-RUN mkdir app/optimization_problem && touch app/optimization_problem/__init__.py
+RUN mkdir tmp_files
 
-ENV PYTHONPATH=/pyristic_api/app
+ENV PYTHONPATH=/pyristic_api/app:/pyristic_api/tmp_files
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]

@@ -1,0 +1,29 @@
+{
+    "arguments_optimizer": {
+        "arguments":{
+            "generations":10,
+            "size_population": 70
+        }
+    },
+    "config_operators": {
+        "methods": {
+            
+            "mutation_operator":{
+                "operator_name":"SigmaMutator",
+                "parameters":[]
+            },
+            "survivor_selector":{
+                "operator_name":"MergeSelector",
+                "parameters":[]
+            },
+            "setter_invalid_solution":{
+                "operator_name":"ContinuosFixer",
+                "parameters":[[-4.5,4.5]]
+            },
+            "adaptive_mutation_operator": {
+                "operator_name":"SigmaEpAdaptiveMutator",
+                "parameters": [2,0.5]
+            }
+        }
+    }   
+}

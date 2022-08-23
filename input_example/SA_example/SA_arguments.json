@@ -1,0 +1,6 @@
+{
+    "arguments": {
+      "initial_temperature": 1000,
+      "eps": 0.01
+    }
+  }

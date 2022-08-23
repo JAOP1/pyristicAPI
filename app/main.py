@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from pyristic.utils import get_stats
+import search_utils.evolutionary as EA_utils
+import search_utils.simulated_annealing as SA_utils
 import argument_types as arg_api
 import validations as val_api
 import utils
@@ -55,8 +57,8 @@ def execute_optimizer_request(
         - arguments_optimizer: dictionary with the key arguments for the optimize method.
         - config_operators: dictionary with the operators applied to the algorithm.
     """
-    configuration = utils.create_evolutionary_config(optimizer, config_operators.methods)
-    evolutionary_algorithm = utils.create_evolutionary_algorithm(optimizer, configuration)
+    configuration = EA_utils.create_evolutionary_config(optimizer, config_operators.methods)
+    evolutionary_algorithm = EA_utils.create_evolutionary_algorithm(optimizer, configuration)
     statistics_algorithm = utils.transform_values_dict(
                             get_stats(
                                 evolutionary_algorithm,
@@ -66,4 +68,48 @@ def execute_optimizer_request(
                                 verbose=False
                             )
                         )
+    return JSONResponse(content=statistics_algorithm)
+
+
+@app.post(
+        "/optimize/SimulatedAnnealing",
+        status_code=200,
+        dependencies = [Depends(val_api.ValidateFiles(
+                            [
+                            'function',
+                            'constraints',
+                            'SA_neighbor_generator',
+                            'generator_initial_solution'
+                            ]))
+                        ],
+        tags=["Combinatorial algorithms"]
+    )
+def execute_sa_request(num_executions:int, arguments_optimizer: arg_api.OptimizerArguments):
+    """
+    Description:
+        This is the route to execute a search based on Simulated Annealing implemented in pyristic.
+    Arguments:
+        - num_executions: integer number that is the number of times executed the algorithm.
+        - arguments_optimizer: dictionary with the key arguments for the optimize method.
+    """
+    try:
+        get_initial_solution = utils.get_method_by_local_file(
+                                    'generator_initial_solution',
+                                    'generate_initial_solution'
+                                )
+        sa_algorithm = SA_utils.create_simulatedannealing_algorithm()
+        statistics_algorithm = utils.transform_values_dict(
+                            get_stats(
+                                sa_algorithm,
+                                num_executions,
+                                [get_initial_solution],
+                                arguments_optimizer.arguments,
+                                verbose=False
+                            )
+                        )
+    except Exception as error:
+        raise HTTPException(
+            status_code= 404,
+            detail= str(error)
+        )
     return JSONResponse(content=statistics_algorithm)
