@@ -2,7 +2,7 @@
     "arguments_optimizer": {
         "arguments":{
             "generations":10,
-            "size_population": 70,
+            "size_population": 70
         }
     },
     "config_operators": {

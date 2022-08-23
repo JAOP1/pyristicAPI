@@ -6,10 +6,13 @@ from pyristic.heuristic import Genetic, EvolutionStrategy, EvolutionaryProgrammi
 from pyristic.utils.evolutionary_config import OptimizerConfig
 import pyristic.utils.operators as pc_method
 import pyristic.utils.helpers as utils
-from .argument_types import EvolutionaryOperators, EvolutionaryAlgorithm, OptimizerArguments
-from .settings import LOCAL_FILE_STORAGE
+import argument_types as arg_api
+import settings
 
-def create_evolutionary_config(algorithm_type: EvolutionaryAlgorithm, config:EvolutionaryOperators) -> OptimizerConfig:
+
+def create_evolutionary_config(
+    algorithm_type: arg_api.EvolutionaryAlgorithm,
+    config: arg_api.EvolutionaryOperators) -> OptimizerConfig:
     """
     Description:
         It creates the evolutionary configuration for the specific algorithm.
@@ -57,7 +60,12 @@ def create_evolutionary_config(algorithm_type: EvolutionaryAlgorithm, config:Evo
             )
     return pyristic_config
 
-def create_evolutionary_algorithm(algorithm_type: EvolutionaryAlgorithm, evolutionary_config: OptimizerConfig) -> typing.Union[Genetic, EvolutionStrategy, EvolutionaryProgramming]:
+def create_evolutionary_algorithm(
+    algorithm_type: arg_api.EvolutionaryAlgorithm,
+    evolutionary_config: OptimizerConfig) -> typing.Union[
+                                                        Genetic,
+                                                        EvolutionStrategy,
+                                                        EvolutionaryProgramming]:
     """
     Description:
         Returns a initialized evolutionary algorithm.
@@ -67,9 +75,9 @@ def create_evolutionary_algorithm(algorithm_type: EvolutionaryAlgorithm, evoluti
             needed for the algorithm.
     """
     try:
-        from .optimization_problem.function import aptitude_function
-        from .optimization_problem.constraints import ARRAY_CONSTRAINTS
-        from .optimization_problem.search_space import BOUNDS, DECISION_VARIABLES
+        from optimization_problem.function import aptitude_function
+        from optimization_problem.constraints import ARRAY_CONSTRAINTS
+        from optimization_problem.search_space import BOUNDS, DECISION_VARIABLES
         initialize_arguments = {
             'function':aptitude_function,
             'decision_variables': DECISION_VARIABLES,
@@ -95,11 +103,11 @@ def create_file(suffix_name: str, content: typing.Union[str,typing.List[str]]):
     Description:
         Create a file python file using the content.
     """
-    with open( os.path.join( LOCAL_FILE_STORAGE, f'{suffix_name}.py'),'w') as python_file:
+    with open( os.path.join( settings.LOCAL_FILE_STORAGE, f'{suffix_name}.py'),'w') as python_file:
         for item in content:
             python_file.write(item)
 
-def transform_values_dict(data_obj):
+def transform_values_dict(data_obj: dict) -> dict:
     """
     Description:
         In nested dictionaries convert the numpy arrays in python list.
@@ -108,6 +116,6 @@ def transform_values_dict(data_obj):
         return list(data_obj)
 
     if isinstance(data_obj, dict):
-        for k, v in data_obj.items():
-            data_obj.update({k: transform_values_dict(v)})
+        for key, value in data_obj.items():
+            data_obj.update({key: transform_values_dict(value)})
     return data_obj
