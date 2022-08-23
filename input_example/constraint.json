@@ -1,3 +1,0 @@
-{
-    "content": "def constraint1_beale(X) -> bool:\n\tfor i in range(len(X)):\n\t\tif -4.5>X[i] or X[i] > 4.5:\n\t\t\treturn False\n\treturn True\nARRAY_CONSTRAINTS = [constraint1_beale]\n"
-}
