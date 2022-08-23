@@ -1,0 +1,3 @@
+{
+    "content":"import numpy as np\ndef g_salesman(x : np.ndarray) -> bool:\n\tsize = len(x)\n\tsize_ = len(np.unique(x))\n\treturn size == size_\nARRAY_CONSTRAINTS= [g_salesman]"
+}

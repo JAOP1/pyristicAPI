@@ -22,10 +22,10 @@ docker run --rm -it -p 80:80 --name pyristic-container pyristic-image
 3. If you would like mount your optimization problem, you can! The necessary is only include the folder path where is located your files. As follow:
 
 ```
-docker run --rm -it -p 80:80 -v $(pwd)/LOCAL_PATH:/pyristic_api/app/optimization_problem --name pyristic-container pyristic-image
+docker run --rm -it -p 80:80 -v $(pwd)/LOCAL_PATH:/pyristic_api/tmp_files --name pyristic-container pyristic-image
 ```
 
-In the LOCAL_PATH, you replace by the path to you folder, where the python files required are. Is too important that the folder path has a '__init__.py' file.  The navigation until you local_path should be thinking in the current path where you executed the first command.
+In the LOCAL_PATH, you replace by the path to you folder, where the python files required are. Is too important that the folder path.  The navigation until you local_path should be thinking in the current path where you executed the first command.
 
 4. Optionally, you can open the container's console, it is very helpful when you want see if the files are copied well or make a debugging.
 

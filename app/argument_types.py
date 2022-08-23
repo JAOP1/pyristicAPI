@@ -1,6 +1,6 @@
 from enum import Enum
-import pydantic
 import typing
+import pydantic
 
 class EvolutionaryOperatorConfig(pydantic.BaseModel):
     """
@@ -37,6 +37,8 @@ class FileType(str,Enum):
     FUNCTION = 'function'
     CONSTRAINTS = 'constraints'
     SEARCH_SPACE = 'search_space'
+    SA_NEIGHBORS = 'SA_neighbor_generator'
+    GENERATOR_INITIAL_SOLUTION = 'generator_initial_solution'
 
 class StringInput(pydantic.BaseModel):
     """
