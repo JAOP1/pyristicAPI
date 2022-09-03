@@ -113,3 +113,14 @@ def execute_sa_request(num_executions:int, arguments_optimizer: arg_api.Optimize
             detail= str(error)
         )
     return JSONResponse(content=statistics_algorithm)
+
+
+@app.post(
+    "/pyristic/connected",
+    status_code=200
+)
+def get_verification_response():
+    """
+    Auxiliar function to test the service is working.
+    """
+    return JSONResponse(content={'pyristic':'isAlive'})
