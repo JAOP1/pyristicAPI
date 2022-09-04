@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pyristic.utils import get_stats
 import search_utils.evolutionary as EA_utils
 import search_utils.simulated_annealing as SA_utils
@@ -14,6 +15,18 @@ app = FastAPI(
         problem and perform one of the search algorithm that has pyristic.",
     docs_url='/',
     openapi_tags=settings.OAPI_TAGS
+)
+
+origins = [
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 @app.post(
