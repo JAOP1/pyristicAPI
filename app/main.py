@@ -78,9 +78,10 @@ def execute_optimizer_request(
                                 num_executions,
                                 [],
                                 arguments_optimizer.arguments,
-                                verbose=False
+                                verbose=True
                             )
                         )
+    print(statistics_algorithm)
     return JSONResponse(content=statistics_algorithm)
 
 
@@ -117,7 +118,7 @@ def execute_sa_request(num_executions:int, arguments_optimizer: arg_api.Optimize
                                 num_executions,
                                 [get_initial_solution],
                                 arguments_optimizer.arguments,
-                                verbose=False
+                                verbose=True
                             )
                         )
     except Exception as error:
