@@ -12,4 +12,4 @@ RUN mkdir tmp_files
 
 ENV PYTHONPATH=/pyristic_api/app:/pyristic_api/tmp_files
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]

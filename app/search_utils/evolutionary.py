@@ -52,8 +52,12 @@ def create_evolutionary_config(
             if operator_type == 'setter_invalid_solution':
                 search_location = pc_utils
             method = getattr(search_location, config[operator_type].operator_name)
-            pyristic_config.methods[operator_type] = method(*config[operator_type].parameters)
 
+            try:
+                pyristic_config.methods[operator_type] = method(*config[operator_type].parameters)
+            except:
+                #WORKAROUND
+                pyristic_config.methods[operator_type] = method(*[config[operator_type].parameters])
         except Exception as error:
             raise HTTPException(
                 status_code= 400,
