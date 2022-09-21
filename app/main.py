@@ -70,7 +70,9 @@ def execute_optimizer_request(
         - arguments_optimizer: dictionary with the key arguments for the optimize method.
         - config_operators: dictionary with the operators applied to the algorithm.
     """
+    print("Starting evolutionary optimization execution")
     configuration = EA_utils.create_evolutionary_config(optimizer, config_operators.methods)
+    print(configuration)
     evolutionary_algorithm = EA_utils.create_evolutionary_algorithm(optimizer, configuration)
     statistics_algorithm = utils.transform_values_dict(
                             get_stats(
@@ -81,7 +83,7 @@ def execute_optimizer_request(
                                 verbose=True
                             )
                         )
-    print(statistics_algorithm)
+    print("End evolutionary optimization execution")
     return JSONResponse(content=statistics_algorithm)
 
 
@@ -107,6 +109,7 @@ def execute_sa_request(num_executions:int, arguments_optimizer: arg_api.Optimize
         - arguments_optimizer: dictionary with the key arguments for the optimize method.
     """
     try:
+        print("Starting SA optimization execution")
         get_initial_solution = utils.get_method_by_local_file(
                                     'generator_initial_solution',
                                     'generate_initial_solution'
@@ -119,9 +122,10 @@ def execute_sa_request(num_executions:int, arguments_optimizer: arg_api.Optimize
                                 [get_initial_solution],
                                 arguments_optimizer.arguments,
                                 verbose=True
-                            )
-                        )
+        ))
+        print("End SA optimization execution")
     except Exception as error:
+        print("Error:", error)
         raise HTTPException(
             status_code= 404,
             detail= str(error)
