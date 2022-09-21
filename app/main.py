@@ -74,6 +74,7 @@ def execute_optimizer_request(
     configuration = EA_utils.create_evolutionary_config(optimizer, config_operators.methods)
     print(configuration)
     evolutionary_algorithm = EA_utils.create_evolutionary_algorithm(optimizer, configuration)
+    print("Created evolutionary algorithm")
     statistics_algorithm = utils.transform_values_dict(
                             get_stats(
                                 evolutionary_algorithm,
@@ -124,7 +125,6 @@ def execute_sa_request(num_executions:int, arguments_optimizer: arg_api.Optimize
                                 arguments_optimizer.arguments,
                                 verbose=True
         ))
-        print(statistics_algorithm)
         print("End SA optimization execution")
     except Exception as error:
         print("Error:", error)
