@@ -19,14 +19,17 @@ def transform_values_dict(data_obj: dict) -> dict:
     Description:
         In nested dictionaries convert the numpy arrays in python list.
     """
-    if isinstance(data_obj, np.ndarray):
-        return list(data_obj)
 
     if isinstance(data_obj, dict):
         for key, value in data_obj.items():
             data_obj.update({key: transform_values_dict(value)})
+
+    elif isinstance(data_obj, np.ndarray):
+        return list(data_obj.astype(float))
+
     elif isinstance(data_obj,list):
         return [transform_values_dict(item) for item in data_obj]
+
     return data_obj
 
 def get_method_by_local_file(file_name:str, method:str) -> typing.Callable:
