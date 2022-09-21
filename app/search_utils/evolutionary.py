@@ -81,13 +81,13 @@ def create_evolutionary_algorithm(
     """
     try:
         initialize_arguments = {
-            'function':utils.get_method_by_local_file('function','aptitude_function'),
-            'decision_variables': utils.get_method_by_local_file(
+            'function':utils.ModulesHandler().get_method_by_module('function','aptitude_function'),
+            'decision_variables': utils.ModulesHandler().get_method_by_module(
                                             'search_space',
                                             'DECISION_VARIABLES'
                                 ),
-            'constraints':utils.get_method_by_local_file('constraints','ARRAY_CONSTRAINTS'),
-            'bounds':utils.get_method_by_local_file('search_space','BOUNDS'),
+            'constraints':utils.ModulesHandler().get_method_by_module('constraints','ARRAY_CONSTRAINTS'),
+            'bounds':utils.ModulesHandler().get_method_by_module('search_space','BOUNDS'),
             'config':evolutionary_config
         }
         if algorithm_type == 'GA':
@@ -98,7 +98,7 @@ def create_evolutionary_algorithm(
             return EvolutionaryProgramming(**initialize_arguments)
 
     except Exception as error:
-        raise HTTPException(    
+        raise HTTPException(
             status_code= 404,
             detail= str(error)
         )

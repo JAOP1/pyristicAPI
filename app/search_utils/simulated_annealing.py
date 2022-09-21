@@ -13,12 +13,12 @@ def create_simulatedannealing_algorithm() -> SimulatedAnnealing:
         - optimizer_arguments: dictionary with the keys required to perform the search.
     """
     try:
-        function = utils.get_method_by_local_file('function','function')
-        constraints = utils.get_method_by_local_file('constraints','ARRAY_CONSTRAINTS')
-        generator = utils.get_method_by_local_file('SA_neighbor_generator','neighbor_generator')
+        function = utils.ModulesHandler().get_method_by_module('function','function')
+        constraints = utils.ModulesHandler().get_method_by_module('constraints','ARRAY_CONSTRAINTS')
+        generator = utils.ModulesHandler().get_method_by_module('SA_neighbor_generator','neighbor_generator')
         return SimulatedAnnealing(function, constraints, generator)
     except Exception as error:
-        raise HTTPException(    
+        raise HTTPException(
             status_code= 404,
             detail= str(error)
         )

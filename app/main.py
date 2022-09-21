@@ -111,7 +111,7 @@ def execute_sa_request(num_executions:int, arguments_optimizer: arg_api.Optimize
     """
     try:
         print("Starting SA optimization execution")
-        get_initial_solution = utils.get_method_by_local_file(
+        get_initial_solution = utils.ModulesHandler().get_method_by_module(
                                     'generator_initial_solution',
                                     'generate_initial_solution'
                                 )
