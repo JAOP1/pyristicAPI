@@ -10,7 +10,7 @@ import pyristic.utils.helpers as pc_utils
 import argument_types as arg_api
 import utils
 
-def get_evolutionary_method(operator_type, config):
+def get_evolutionary_method(algorithm, operator_type, config):
     """
     Description:
         This method helps to obtain the method of the right module. It could be
@@ -23,7 +23,9 @@ def get_evolutionary_method(operator_type, config):
         if operator_type == 'setter_invalid_solution':
             search_location = pc_utils
         return getattr(search_location, method_name)
-    return utils.ModulesHandler().get_method_by_module(operator_type, 'CustomMethod')
+    return utils.ModulesHandler().get_method_by_module(
+        f"{algorithm}_{operator_type}", 'CustomMethod'
+    )
 
 def create_evolutionary_config(
     algorithm_type: arg_api.EvolutionaryAlgorithm,
@@ -61,17 +63,17 @@ def create_evolutionary_config(
     pyristic_config = OptimizerConfig()
     for operator_type in required_keys:
         try:
-            method = get_evolutionary_method(operator_type, config)
+            method = get_evolutionary_method(algorithm_type, operator_type, config)
             try:
                 pyristic_config.methods[operator_type] = method(*config[operator_type].parameters)
-            except:
+            except Exception:
                 #WORKAROUND
                 pyristic_config.methods[operator_type] = method(*[config[operator_type].parameters])
         except Exception as error:
             raise HTTPException(
                 status_code= 400,
                 detail= f"Error in the key: '{operator_type}'.\n Error description:\n{str(error)}"
-            )
+            ) from error
     return pyristic_config
 
 def create_evolutionary_algorithm(
@@ -95,7 +97,10 @@ def create_evolutionary_algorithm(
                                             'search_space',
                                             'DECISION_VARIABLES'
                                 ),
-            'constraints':utils.ModulesHandler().get_method_by_module('constraints','ARRAY_CONSTRAINTS'),
+            'constraints':utils.ModulesHandler().get_method_by_module(
+                                            'constraints',
+                                            'ARRAY_CONSTRAINTS'
+                                ),
             'bounds':utils.ModulesHandler().get_method_by_module('search_space','BOUNDS'),
             'config':evolutionary_config
         }
@@ -110,4 +115,4 @@ def create_evolutionary_algorithm(
         raise HTTPException(
             status_code= 404,
             detail= str(error)
-        )
+        ) from error

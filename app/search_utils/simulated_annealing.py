@@ -1,5 +1,5 @@
 """
-Method required to implement simulated annealing algorithm of pyristic. 
+Method required to implement simulated annealing algorithm of pyristic.
 """
 from fastapi import HTTPException
 from pyristic.heuristic import SimulatedAnnealing
@@ -17,8 +17,8 @@ def create_simulatedannealing_algorithm() -> SimulatedAnnealing:
         constraints = utils.ModulesHandler().get_method_by_module('constraints','ARRAY_CONSTRAINTS')
         generator = utils.ModulesHandler().get_method_by_module('SA_neighbor_generator','neighbor_generator')
         return SimulatedAnnealing(function, constraints, generator)
-    except Exception as error:
+    except Exception as exc:
         raise HTTPException(
             status_code= 404,
-            detail= str(error)
-        )
+            detail= str(exc)
+        ) from exc

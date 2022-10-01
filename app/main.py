@@ -43,11 +43,11 @@ def create_file_request(file_name: arg_api.FileType, text_content: arg_api.Strin
     """
     try:
         utils.create_file(file_name, text_content.content)
-    except:
+    except Exception as exc:
         raise HTTPException(
                 status_code= 500,
                 detail= f"Something happend in the creation of {file_name}."
-            )
+            ) from exc
     return f"Created with success {file_name}"
 
 @app.post(
@@ -126,12 +126,12 @@ def execute_sa_request(num_executions:int, arguments_optimizer: arg_api.Optimize
                                 verbose=True
         ))
         print("End SA optimization execution")
-    except Exception as error:
-        print("Error:", error)
+    except Exception as exc:
+        print("Error:", exc)
         raise HTTPException(
             status_code= 404,
-            detail= str(error)
-        )
+            detail= str(exc)
+        ) from exc
     return JSONResponse(content=statistics_algorithm)
 
 

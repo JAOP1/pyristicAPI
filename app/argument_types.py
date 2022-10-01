@@ -39,6 +39,22 @@ class FileType(str,Enum):
     SEARCH_SPACE = 'search_space'
     SA_NEIGHBORS = 'SA_neighbor_generator'
     GENERATOR_INITIAL_SOLUTION = 'generator_initial_solution'
+    EP_MUTATION_OPERATOR = 'EP_mutation_operator'
+    EP_SURVIVOR_SELECTOR = 'EP_survivor_selector'
+    EP_SETTER_INVALID_SOLUTION = 'EP_setter_invalid_solution'
+    EP_ADAPTIVE_MUTATION_OPERATOR = 'EP_adaptive_mutation_operator'
+    EE_MUTATION_OPERATOR = 'EE_mutation_operator'
+    EE_SURVIVOR_SELECTOR = 'EE_survivor_selector'
+    EE_SETTER_INVALID_SOLUTION = 'EE_setter_invalid_solution'
+    EE_ADAPTIVE_CROSSOVER_OPERATOR = 'EE_adaptive_crossover_operator'
+    EE_ADAPTIVE_MUTATION_OPERATOR = 'EE_adaptive_mutation_operator'
+    EE_CROSSOVER_OPERATOR = 'EE_crossover_operator'
+    GA_MUTATION_OPERATOR = 'GA_mutation_operator'
+    GA_SURVIVOR_SELECTOR = 'GA_survivor_selector'
+    GA_SETTER_INVALID_SOLUTION = 'GA_setter_invalid_solution'
+    GA_CROSSOVER_OPERATOR = 'GA_crossover_operator'
+    GA_PARENT_SELECTOR = 'GA_parent_selector'
+
 
 class StringInput(pydantic.BaseModel):
     """
