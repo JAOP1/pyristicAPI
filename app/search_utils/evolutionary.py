@@ -72,7 +72,7 @@ def create_evolutionary_config(
         except Exception as error:
             raise HTTPException(
                 status_code= 400,
-                detail= f"Error in the key: '{operator_type}'.\n Error description:\n{str(error)}"
+                detail= str(error)
             ) from error
     return pyristic_config
 

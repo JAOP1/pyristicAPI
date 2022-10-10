@@ -46,7 +46,7 @@ def create_file_request(file_name: arg_api.FileType, text_content: arg_api.Strin
     except Exception as exc:
         raise HTTPException(
                 status_code= 500,
-                detail= f"Something happend in the creation of {file_name}."
+                detail= str(exc)
             ) from exc
     return f"Created with success {file_name}"
 
