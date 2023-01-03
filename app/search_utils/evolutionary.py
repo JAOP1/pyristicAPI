@@ -42,7 +42,8 @@ def create_evolutionary_config(
     required_keys = [
         'mutation_operator',
         'survivor_selector',
-        'setter_invalid_solution'
+        'setter_invalid_solution',
+        'init_population'
         ]
 
     if algorithm_type == 'GA':
