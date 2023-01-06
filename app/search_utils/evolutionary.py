@@ -39,7 +39,10 @@ def create_evolutionary_config(
             types of algorithms (GA,EE,EP).
         - config: dictionary with the operators desired
     """
-    required_keys = [
+    optional_methods = [
+        'init_population'
+    ]
+    methods_to_set = [
         'mutation_operator',
         'survivor_selector',
         'setter_invalid_solution',
@@ -47,30 +50,33 @@ def create_evolutionary_config(
         ]
 
     if algorithm_type == 'GA':
-        required_keys += [
+        methods_to_set += [
             'crossover_operator',
             'parent_selector'
         ]
     elif algorithm_type == 'EE':
-        required_keys += [
+        methods_to_set += [
             'adaptive_crossover_operator',
             'adaptive_mutation_operator',
             'crossover_operator'
         ]
     else:
-        required_keys += [
+        methods_to_set += [
             'adaptive_mutation_operator'
         ]
     pyristic_config = OptimizerConfig()
-    for operator_type in required_keys:
+    for operator_type in methods_to_set:
+        if not config.get(operator_type,False) and operator_type in optional_methods:
+            continue
+
         try:
             method = get_evolutionary_method(algorithm_type, operator_type, config)
             try:
                 pyristic_config.methods[operator_type] = method(*config[operator_type].parameters)
-            except Exception:
+            except TypeError:
                 #WORKAROUND
                 pyristic_config.methods[operator_type] = method(*[config[operator_type].parameters])
-        except Exception as error:
+        except AttributeError as error:
             raise HTTPException(
                 status_code= 400,
                 detail= str(error)

@@ -1,6 +1,5 @@
 import unittest
 from unittest.mock import patch
-import os
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
 import json
@@ -13,8 +12,8 @@ class TestCreateFileRoute(unittest.TestCase):
     """
     CLIENT = TestClient(main.app)
 
-    @patch('settings.LOCAL_FILE_STORAGE','tests/')
-    def test_create_available_files(self):
+    @patch('main.utils.create_file')
+    def test_create_available_files(self, mock_create_file):
         """
         Tests for the /create-file/ route.
         """
@@ -22,8 +21,12 @@ class TestCreateFileRoute(unittest.TestCase):
         for file_name in ['function','constraints', 'search_space']:
             response = self.CLIENT.post(f'/create-file/{file_name}', json={'content':'Test file'})
             self.assertEqual(response.status_code,200)
-            self.assertEqual(os.path.exists(f"tests/{file_name}.py"), True)
-            os.remove(f"tests/{file_name}.py")
+        #It should raise an exception when the creation of file fail.
+        mock_create_file.side_effect = Exception('Something has failed.')
+        response = self.CLIENT.post(f'/create-file/{file_name}', json={'content':'Test file'})
+        self.assertEqual(response.status_code,500)
+        dict_response = json.loads(response.content.decode('utf-8'))
+        self.assertTrue("Something has failed." == dict_response['detail'])
 
     def test_create_file_fail(self):
         """
