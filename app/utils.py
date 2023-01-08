@@ -34,13 +34,8 @@ class ModulesHandler:
             - method: string that represent the function or variable to find in
                 the file.
         """
-        try:
-            return getattr(cls.modules[module_name], method)
-        except Exception as error:
-            raise HTTPException(
-                status_code= 404,
-                detail= str(error)
-            )
+        return getattr(cls.modules[module_name], method)
+
 
 def create_file(suffix_name: str, content: typing.Union[str,typing.List[str]]):
     """

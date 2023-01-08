@@ -69,18 +69,13 @@ def create_evolutionary_config(
         if not config.get(operator_type,False) and operator_type in optional_methods:
             continue
 
+        method = get_evolutionary_method(algorithm_type, operator_type, config)
         try:
-            method = get_evolutionary_method(algorithm_type, operator_type, config)
-            try:
-                pyristic_config.methods[operator_type] = method(*config[operator_type].parameters)
-            except TypeError:
-                #WORKAROUND
-                pyristic_config.methods[operator_type] = method(*[config[operator_type].parameters])
-        except AttributeError as error:
-            raise HTTPException(
-                status_code= 400,
-                detail= str(error)
-            ) from error
+            pyristic_config.methods[operator_type] = method(*config[operator_type].parameters)
+        except TypeError:
+            #WORKAROUND
+            pyristic_config.methods[operator_type] = method(*[config[operator_type].parameters])
+
     return pyristic_config
 
 def create_evolutionary_algorithm(
@@ -97,29 +92,22 @@ def create_evolutionary_algorithm(
         - evolutionary_config: Optimization configuration that provides the methods
             needed for the algorithm.
     """
-    try:
-        initialize_arguments = {
-            'function':utils.ModulesHandler().get_method_by_module('function','aptitude_function'),
-            'decision_variables': utils.ModulesHandler().get_method_by_module(
-                                            'search_space',
-                                            'DECISION_VARIABLES'
-                                ),
-            'constraints':utils.ModulesHandler().get_method_by_module(
-                                            'constraints',
-                                            'ARRAY_CONSTRAINTS'
-                                ),
-            'bounds':utils.ModulesHandler().get_method_by_module('search_space','BOUNDS'),
-            'config':evolutionary_config
-        }
-        if algorithm_type == 'GA':
-            return Genetic(**initialize_arguments)
-        elif algorithm_type == 'EE':
-            return EvolutionStrategy(**initialize_arguments)
-        else:
-            return EvolutionaryProgramming(**initialize_arguments)
+    initialize_arguments = {
+        'function':utils.ModulesHandler().get_method_by_module('function','aptitude_function'),
+        'decision_variables': utils.ModulesHandler().get_method_by_module(
+                                        'search_space',
+                                        'DECISION_VARIABLES'
+                            ),
+        'constraints':utils.ModulesHandler().get_method_by_module(
+                                        'constraints',
+                                        'ARRAY_CONSTRAINTS'
+                            ),
+        'bounds':utils.ModulesHandler().get_method_by_module('search_space','BOUNDS'),
+        'config':evolutionary_config
+    }
+    if algorithm_type == 'GA':
+        return Genetic(**initialize_arguments)
+    elif algorithm_type == 'EE':
+        return EvolutionStrategy(**initialize_arguments)
+    return EvolutionaryProgramming(**initialize_arguments)
 
-    except Exception as error:
-        raise HTTPException(
-            status_code= 404,
-            detail= str(error)
-        ) from error

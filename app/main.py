@@ -70,21 +70,27 @@ def execute_optimizer_request(
         - arguments_optimizer: dictionary with the key arguments for the optimize method.
         - config_operators: dictionary with the operators applied to the algorithm.
     """
-    print("Starting evolutionary optimization execution")
-    configuration = EA_utils.create_evolutionary_config(optimizer, config_operators.methods)
-    print(configuration)
-    evolutionary_algorithm = EA_utils.create_evolutionary_algorithm(optimizer, configuration)
-    print("Created evolutionary algorithm")
-    statistics_algorithm = utils.transform_values_dict(
-                            get_stats(
-                                evolutionary_algorithm,
-                                num_executions,
-                                [],
-                                arguments_optimizer.arguments,
-                                verbose=True
+    try:
+        print("Starting evolutionary optimization execution")
+        configuration = EA_utils.create_evolutionary_config(optimizer, config_operators.methods)
+        print(configuration)
+        evolutionary_algorithm = EA_utils.create_evolutionary_algorithm(optimizer, configuration)
+        print("Created evolutionary algorithm")
+        statistics_algorithm = utils.transform_values_dict(
+                                get_stats(
+                                    evolutionary_algorithm,
+                                    num_executions,
+                                    [],
+                                    arguments_optimizer.arguments,
+                                    verbose=True
+                                )
                             )
-                        )
-    print("End evolutionary optimization execution")
+        print("End evolutionary optimization execution")
+    except Exception as error:
+        raise HTTPException(
+                status_code= 404,
+                detail= str(error)
+            )
     return JSONResponse(content=statistics_algorithm)
 
 
