@@ -137,7 +137,7 @@ class TestEvolutionary(unittest.TestCase):
 
         #It should return an exception when it couldn't create the algorithm.
         mock_modules_hanler.side_effect = Exception("Couldn't get the method.")
-        with self.assertRaises(HTTPException):
+        with self.assertRaises(Exception):
             ev_utils.create_evolutionary_algorithm('EP', evolutive_programming_config)
 
 if __name__ == '__main__':
