@@ -1,3 +1,4 @@
+import traceback
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -86,11 +87,11 @@ def execute_optimizer_request(
                                 )
                             )
         print("End evolutionary optimization execution")
-    except Exception as error:
+    except Exception as exc:
         raise HTTPException(
                 status_code= 404,
-                detail= str(error)
-            )
+                detail= traceback.format_exc()
+            ) from exc
     return JSONResponse(content=statistics_algorithm)
 
 
@@ -133,10 +134,9 @@ def execute_sa_request(num_executions:int, arguments_optimizer: arg_api.Optimize
         ))
         print("End SA optimization execution")
     except Exception as exc:
-        print("Error:", exc)
         raise HTTPException(
             status_code= 404,
-            detail= str(exc)
+            detail= traceback.format_exc()
         ) from exc
     return JSONResponse(content=statistics_algorithm)
 
