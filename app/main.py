@@ -11,11 +11,11 @@ import utils
 import settings
 
 app = FastAPI(
-    title='pyristic-api',
+    title="pyristic-api",
     description="API to create files related to the optimization \
         problem and perform one of the search algorithm that has pyristic.",
-    docs_url='/',
-    openapi_tags=settings.OAPI_TAGS
+    docs_url="/",
+    openapi_tags=settings.OAPI_TAGS,
 )
 
 origins = [
@@ -30,10 +30,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post(
-    "/create-file/{file_name}",
-    status_code=200,
-    tags=["Utilities"])
+
+@app.post("/create-file/{file_name}", status_code=200, tags=["Utilities"])
 def create_file_request(file_name: arg_api.FileType, text_content: arg_api.StringInput):
     """
     Description:
@@ -45,22 +43,24 @@ def create_file_request(file_name: arg_api.FileType, text_content: arg_api.Strin
     try:
         utils.create_file(file_name, text_content.content)
     except Exception as exc:
-        raise HTTPException(
-                status_code= 500,
-                detail= str(exc)
-            ) from exc
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
     return f"Created with success {file_name}"
+
 
 @app.post(
     "/optimize/evolutionary/{optimizer}",
     status_code=200,
-    dependencies = [Depends(val_api.ValidateFiles(['function', 'constraints','search_space']))],
-    tags=["Evolutionary optimization algorithm"])
+    dependencies=[
+        Depends(val_api.ValidateFiles(["function", "constraints", "search_space"]))
+    ],
+    tags=["Evolutionary optimization algorithm"],
+)
 def execute_optimizer_request(
     optimizer: arg_api.EvolutionaryAlgorithm,
     num_executions: int,
     arguments_optimizer: arg_api.OptimizerArguments,
-    config_operators: arg_api.EvolutionaryOperators):
+    config_operators: arg_api.EvolutionaryOperators,
+):
     """
     Description:
     This is the route to execute an evolutionary algorithm with the specified configuration
@@ -73,42 +73,49 @@ def execute_optimizer_request(
     """
     try:
         print("Starting evolutionary optimization execution")
-        configuration = EA_utils.create_evolutionary_config(optimizer, config_operators.methods)
+        configuration = EA_utils.create_evolutionary_config(
+            optimizer, config_operators.methods
+        )
         print(configuration)
-        evolutionary_algorithm = EA_utils.create_evolutionary_algorithm(optimizer, configuration)
+        evolutionary_algorithm = EA_utils.create_evolutionary_algorithm(
+            optimizer, configuration
+        )
         print("Created evolutionary algorithm")
         statistics_algorithm = utils.transform_values_dict(
-                                get_stats(
-                                    evolutionary_algorithm,
-                                    num_executions,
-                                    [],
-                                    arguments_optimizer.arguments,
-                                    verbose=True
-                                )
-                            )
+            get_stats(
+                evolutionary_algorithm,
+                num_executions,
+                [],
+                arguments_optimizer.arguments,
+                verbose=True,
+            )
+        )
         print("End evolutionary optimization execution")
     except Exception as exc:
-        raise HTTPException(
-                status_code= 404,
-                detail= traceback.format_exc()
-            ) from exc
+        raise HTTPException(status_code=404, detail=traceback.format_exc()) from exc
     return JSONResponse(content=statistics_algorithm)
 
 
 @app.post(
-        "/optimize/SimulatedAnnealing",
-        status_code=200,
-        dependencies = [Depends(val_api.ValidateFiles(
-                            [
-                            'function',
-                            'constraints',
-                            'SA_neighbor_generator',
-                            'generator_initial_solution'
-                            ]))
-                        ],
-        tags=["Combinatorial algorithms"]
-    )
-def execute_sa_request(num_executions:int, arguments_optimizer: arg_api.OptimizerArguments):
+    "/optimize/SimulatedAnnealing",
+    status_code=200,
+    dependencies=[
+        Depends(
+            val_api.ValidateFiles(
+                [
+                    "function",
+                    "constraints",
+                    "SA_neighbor_generator",
+                    "generator_initial_solution",
+                ]
+            )
+        )
+    ],
+    tags=["Combinatorial algorithms"],
+)
+def execute_sa_request(
+    num_executions: int, arguments_optimizer: arg_api.OptimizerArguments
+):
     """
     Description:
         This is the route to execute a search based on Simulated Annealing implemented in pyristic.
@@ -119,34 +126,28 @@ def execute_sa_request(num_executions:int, arguments_optimizer: arg_api.Optimize
     try:
         print("Starting SA optimization execution")
         get_initial_solution = utils.ModulesHandler().get_method_by_module(
-                                    'generator_initial_solution',
-                                    'generate_initial_solution'
-                                )
+            "generator_initial_solution", "generate_initial_solution"
+        )
         sa_algorithm = SA_utils.create_simulatedannealing_algorithm()
         print("created SA algorithm")
         statistics_algorithm = utils.transform_values_dict(
-                            get_stats(
-                                sa_algorithm,
-                                num_executions,
-                                [get_initial_solution],
-                                arguments_optimizer.arguments,
-                                verbose=True
-        ))
+            get_stats(
+                sa_algorithm,
+                num_executions,
+                [get_initial_solution],
+                arguments_optimizer.arguments,
+                verbose=True,
+            )
+        )
         print("End SA optimization execution")
     except Exception as exc:
-        raise HTTPException(
-            status_code= 404,
-            detail= traceback.format_exc()
-        ) from exc
+        raise HTTPException(status_code=404, detail=traceback.format_exc()) from exc
     return JSONResponse(content=statistics_algorithm)
 
 
-@app.post(
-    "/pyristic/connected",
-    status_code=200
-)
+@app.post("/pyristic/connected", status_code=200)
 def get_verification_response():
     """
     Auxiliar function to test the service is working.
     """
-    return JSONResponse(content={'pyristic':'isAlive'})
+    return JSONResponse(content={"pyristic": "isAlive"})
