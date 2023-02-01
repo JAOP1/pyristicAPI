@@ -30,6 +30,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+LOGGER = utils.create_logger(settings.LOGS_FILE)
+
 
 @app.post("/create-file/{file_name}", status_code=200, tags=["Utilities"])
 def create_file_request(file_name: arg_api.FileType, text_content: arg_api.StringInput):
@@ -42,7 +44,9 @@ def create_file_request(file_name: arg_api.FileType, text_content: arg_api.Strin
     """
     try:
         utils.create_file(file_name, text_content.content)
+        LOGGER.info("Uploaded file %s", file_name)
     except Exception as exc:
+        LOGGER.error(exc)
         raise HTTPException(status_code=500, detail=str(exc)) from exc
     return f"Created with success {file_name}"
 
@@ -72,15 +76,15 @@ def execute_optimizer_request(
         - config_operators: dictionary with the operators applied to the algorithm.
     """
     try:
-        print("Starting evolutionary optimization execution")
+        LOGGER.info("Creating configuration for %s", optimizer)
         configuration = EA_utils.create_evolutionary_config(
             optimizer, config_operators.methods
         )
-        print(configuration)
+        LOGGER.info(configuration)
         evolutionary_algorithm = EA_utils.create_evolutionary_algorithm(
             optimizer, configuration
         )
-        print("Created evolutionary algorithm")
+        LOGGER.info("Execute %s - %s", optimizer, num_executions)
         statistics_algorithm = utils.transform_values_dict(
             get_stats(
                 evolutionary_algorithm,
@@ -90,9 +94,11 @@ def execute_optimizer_request(
                 verbose=True,
             )
         )
-        print("End evolutionary optimization execution")
+        LOGGER.info("End with success.")
     except Exception as exc:
-        raise HTTPException(status_code=404, detail=traceback.format_exc()) from exc
+        error_detail = traceback.format_exc()
+        LOGGER.error(error_detail)
+        raise HTTPException(status_code=404, detail=error_detail) from exc
     return JSONResponse(content=statistics_algorithm)
 
 
@@ -124,12 +130,12 @@ def execute_sa_request(
         - arguments_optimizer: dictionary with the key arguments for the optimize method.
     """
     try:
-        print("Starting SA optimization execution")
+        LOGGER.info("Starting SA optimization execution")
         get_initial_solution = utils.ModulesHandler().get_method_by_module(
             "generator_initial_solution", "generate_initial_solution"
         )
         sa_algorithm = SA_utils.create_simulatedannealing_algorithm()
-        print("created SA algorithm")
+        LOGGER.info("created SA algorithm")
         statistics_algorithm = utils.transform_values_dict(
             get_stats(
                 sa_algorithm,
@@ -139,7 +145,7 @@ def execute_sa_request(
                 verbose=True,
             )
         )
-        print("End SA optimization execution")
+        LOGGER.info("End with success.")
     except Exception as exc:
         raise HTTPException(status_code=404, detail=traceback.format_exc()) from exc
     return JSONResponse(content=statistics_algorithm)
@@ -151,3 +157,14 @@ def get_verification_response():
     Auxiliar function to test the service is working.
     """
     return JSONResponse(content={"pyristic": "isAlive"})
+
+
+@app.get("/logs", status_code=200)
+def get_logs():
+    """
+    Description:
+        Return the logs obtained from the api's.
+    """
+    with open(settings.LOGS_FILE, "r", encoding="utf-8") as log_file:
+        content = log_file.read()
+    return JSONResponse(content={"content": content})

@@ -1,5 +1,6 @@
 import os
 import typing
+import logging
 from importlib import import_module, reload
 import numpy as np
 import settings
@@ -70,3 +71,27 @@ def transform_values_dict(data_obj: dict) -> dict:
         return [transform_values_dict(item) for item in data_obj]
 
     return data_obj
+
+
+def create_logger(file_name="api.log"):
+    """
+    Description:
+        Creates a logging object.
+    Arguments:
+        - logger_name: string that helps us to recognize the logger.
+        - file_name: string that indicates the file name where to save the logs.
+    """
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+    file_handler = logging.FileHandler(file_name)
+    file_handler.setLevel(logging.DEBUG)
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter(
+        "%(asctime)s - %(levelname)s: %(message)s", datefmt="%m/%d/%Y %I:%M:%S %p"
+    )
+    stream_handler.setFormatter(formatter)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(stream_handler)
+    logger.addHandler(file_handler)
+    return logger

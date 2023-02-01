@@ -17,3 +17,4 @@ OAPI_TAGS = [
 ]
 LOCAL_FILE_STORAGE = "tmp_files"
 ROOT_PATH = "/pyristic_api"
+LOGS_FILE = "api.log"
