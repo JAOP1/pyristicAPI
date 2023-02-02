@@ -2,7 +2,6 @@
 Methods required to implement a evolutionary algorithm of pyristic.
 """
 import typing
-from fastapi import HTTPException
 from pyristic.heuristic import Genetic, EvolutionStrategy, EvolutionaryProgramming
 from pyristic.utils.evolutionary_config import OptimizerConfig
 import pyristic.utils.operators as pc_method

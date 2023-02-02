@@ -73,7 +73,7 @@ def transform_values_dict(data_obj: dict) -> dict:
     return data_obj
 
 
-def create_logger(file_name="api.log"):
+def create_logger(file_name:str):
     """
     Description:
         Creates a logging object.

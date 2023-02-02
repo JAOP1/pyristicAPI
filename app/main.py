@@ -46,8 +46,9 @@ def create_file_request(file_name: arg_api.FileType, text_content: arg_api.Strin
         utils.create_file(file_name, text_content.content)
         LOGGER.info("Uploaded file %s", file_name)
     except Exception as exc:
-        LOGGER.error(exc)
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+        error_detail = traceback.format_exc()
+        LOGGER.error(error_detail)
+        raise HTTPException(status_code=500, detail=error_detail) from exc
     return f"Created with success {file_name}"
 
 
