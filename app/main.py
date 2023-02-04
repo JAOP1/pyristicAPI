@@ -48,7 +48,7 @@ def create_file_request(file_name: arg_api.FileType, text_content: arg_api.Strin
     except Exception as exc:
         error_detail = traceback.format_exc()
         LOGGER.error(error_detail)
-        raise HTTPException(status_code=500, detail=error_detail) from exc
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
     return f"Created with success {file_name}"
 
 
@@ -81,7 +81,7 @@ def execute_optimizer_request(
         configuration = EA_utils.create_evolutionary_config(
             optimizer, config_operators.methods
         )
-        LOGGER.info(configuration)
+        LOGGER.info("\n%s",configuration)
         evolutionary_algorithm = EA_utils.create_evolutionary_algorithm(
             optimizer, configuration
         )
@@ -99,7 +99,7 @@ def execute_optimizer_request(
     except Exception as exc:
         error_detail = traceback.format_exc()
         LOGGER.error(error_detail)
-        raise HTTPException(status_code=404, detail=error_detail) from exc
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     return JSONResponse(content=statistics_algorithm)
 
 
@@ -148,7 +148,9 @@ def execute_sa_request(
         )
         LOGGER.info("End with success.")
     except Exception as exc:
-        raise HTTPException(status_code=404, detail=traceback.format_exc()) from exc
+        error_detail = traceback.format_exc()
+        LOGGER.error(error_detail)
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     return JSONResponse(content=statistics_algorithm)
 
 
@@ -160,7 +162,7 @@ def get_verification_response():
     return JSONResponse(content={"pyristic": "isAlive"})
 
 
-@app.get("/logs", status_code=200)
+@app.get("/logs", status_code=200, tags=["Utilities"])
 def get_logs():
     """
     Description:
