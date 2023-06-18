@@ -1,21 +1,21 @@
-"""
-Methods required to implement a evolutionary algorithm of pyristic.
-"""
+"""Methods required to implement a evolutionary algorithm of pyristic."""
 import typing
 from pyristic.heuristic import Genetic, EvolutionStrategy, EvolutionaryProgramming
 from pyristic.utils.evolutionary_config import OptimizerConfig
 import pyristic.utils.operators as pc_method
 import pyristic.utils.helpers as pc_utils
-import argument_types as arg_api
-import utils
+from app.models import EvolutionaryAlgorithm, EvolutionaryOperators
+from app.utils.generic import ModulesHandler
 
 
 def get_evolutionary_method(algorithm, operator_type, config):
     """
-    Description:
-        This method helps to obtain the method of the right module. It could be
-        two options. The first option is a custom method uploaded to the server or the second
-        option  is a official pyristic method.
+    Provide the official method or custom method that envolve any step.
+
+    Arguments:
+        - algorithm: It helps us to know the algorithm GA,EE or EP.
+        - operator_type: It says the method to configure.
+        - config: Object that has all configuration and provide us the method name.
     """
     method_name = config[operator_type].operator_name
     if method_name != "CustomMethod":
@@ -23,18 +23,17 @@ def get_evolutionary_method(algorithm, operator_type, config):
         if operator_type == "setter_invalid_solution":
             search_location = pc_utils
         return getattr(search_location, method_name)
-    return utils.ModulesHandler().get_method_by_module(
+    return ModulesHandler().get_method_by_module(
         f"{algorithm}_{operator_type}", "CustomMethod"
     )
 
 
 def create_evolutionary_config(
-    algorithm_type: arg_api.EvolutionaryAlgorithm, config: arg_api.EvolutionaryOperators
+    algorithm_type: EvolutionaryAlgorithm, config: EvolutionaryOperators
 ) -> OptimizerConfig:
     """
-    Description:
-        It creates the evolutionary configuration for the specific algorithm.
-        If there is missing one required key returns to you an error message.
+    Create the evolutionary configuration for the specific algorithm.
+
     Arguments:
         - algorithm_type: Recives a string that correspond to one of the three
             types of algorithms (GA,EE,EP).
@@ -78,31 +77,31 @@ def create_evolutionary_config(
 
 
 def create_evolutionary_algorithm(
-    algorithm_type: arg_api.EvolutionaryAlgorithm, evolutionary_config: OptimizerConfig
+    algorithm_type: EvolutionaryAlgorithm, evolutionary_config: OptimizerConfig
 ) -> typing.Union[Genetic, EvolutionStrategy, EvolutionaryProgramming]:
     """
-    Description:
-        Returns a initialized evolutionary algorithm.
+    Create an instance of evolutionary algorithm selected with the configuration.
+
     Arguments:
         - algorithm_type: string that represent the tipe of algorithm.
         - evolutionary_config: Optimization configuration that provides the methods
             needed for the algorithm.
     """
     initialize_arguments = {
-        "function": utils.ModulesHandler().get_method_by_module(
+        "function": ModulesHandler().get_method_by_module(
             "function", "aptitude_function"
         ),
-        "decision_variables": utils.ModulesHandler().get_method_by_module(
+        "decision_variables": ModulesHandler().get_method_by_module(
             "search_space", "DECISION_VARIABLES"
         ),
-        "constraints": utils.ModulesHandler().get_method_by_module(
+        "constraints": ModulesHandler().get_method_by_module(
             "constraints", "ARRAY_CONSTRAINTS"
         ),
-        "bounds": utils.ModulesHandler().get_method_by_module("search_space", "BOUNDS"),
+        "bounds": ModulesHandler().get_method_by_module("search_space", "BOUNDS"),
         "config": evolutionary_config,
     }
     if algorithm_type == "GA":
         return Genetic(**initialize_arguments)
-    elif algorithm_type == "EE":
+    if algorithm_type == "EE":
         return EvolutionStrategy(**initialize_arguments)
     return EvolutionaryProgramming(**initialize_arguments)

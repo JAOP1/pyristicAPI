@@ -4,9 +4,9 @@ WORKDIR /pyristic_api
  
 RUN mkdir tmp_files; touch api.log
 
-COPY ./requirements.txt /code/requirements.txt
+COPY ./requirements.txt requirements.txt
 
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 COPY ./app /pyristic_api/app
 

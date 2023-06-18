@@ -154,3 +154,4 @@ cython_debug/
 
 # Additionals
 exec_project.txt
+.DS_Store

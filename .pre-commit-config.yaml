@@ -1,0 +1,48 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: pretty-format-json
+        description: Checks that all JSON files are easier to read
+        args: ["--autofix", "--indent=4", "--no-sort-keys"]
+  - repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+      - id: black
+        description: Format python code PEP-8 compliance
+  - repo: local
+    hooks:
+      - id: pylint
+        name: Pylint
+        description: Verify PEP-8 compliance
+        entry: pylint
+        args: [--recursive=y, app/]
+        types: [python]
+        language: system
+        always_run: true
+        pass_filenames: false
+      - id: pydocstyle
+        name: Pydocstyle
+        description: Check docstrings format
+        entry: pydocstyle
+        args: [app/]
+        additional_dependencies: [pydocstyle]
+        types: [python]
+        language: python
+        always_run: true
+        pass_filenames: false
+      - id: run_unit_tests
+        name: Run unit tests
+        entry: coverage run -m unittest discover __tests__
+        language: system
+        types: [python]
+        pass_filenames: false
+        always_run: true
+      - id: coverage_threshold
+        name: Coverage threshold guard
+        entry: coverage report -m --fail-under=85
+        language: python
+        types: [python]
+        additional_dependencies: [coverage]
+        pass_filenames: false
+        always_run: true
