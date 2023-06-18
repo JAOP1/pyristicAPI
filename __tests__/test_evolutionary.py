@@ -1,8 +1,7 @@
 import unittest
 from unittest.mock import patch
 from collections import namedtuple
-from fastapi import HTTPException
-import search_utils.evolutionary as ev_utils
+import services.evolutionary as ev_utils
 
 
 class TestEvolutionary(unittest.TestCase):
@@ -12,7 +11,7 @@ class TestEvolutionary(unittest.TestCase):
 
     method = namedtuple("method", ["operator_name", "parameters"])
 
-    @patch("utils.ModulesHandler")
+    @patch("services.evolutionary.ModulesHandler")
     def test_get_evolutionary_method(self, mock_module_handler):
         """
         Tests for the get_evolutionary_method function.
@@ -100,7 +99,7 @@ class TestEvolutionary(unittest.TestCase):
         evolutive_programming_config = ev_utils.create_evolutionary_config("EP", config)
         match_validation(evolutive_programming_config, config)
 
-    @patch("utils.ModulesHandler")
+    @patch("services.evolutionary.ModulesHandler")
     def test_create_evolutionary_algorithm(self, mock_modules_hanler):
         """
         Tests for the create_evolutionary_algorithm function.

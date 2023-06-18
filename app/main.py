@@ -1,22 +1,23 @@
-import traceback
-from fastapi import FastAPI, HTTPException, Depends
-from fastapi.responses import JSONResponse
+"""Initialization of the API instance."""
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pyristic.utils import get_stats
-import search_utils.evolutionary as EA_utils
-import search_utils.simulated_annealing as SA_utils
-import argument_types as arg_api
-import validations as val_api
-import utils
-import settings
+from app.utils.generic import create_logger
+from app.constants import OAPI_TAGS, LOGS_FILE
+from app.routes.heuristic_routes import heuristics_router
+from app.routes.utilities_routes import utilities_router
 
 app = FastAPI(
     title="pyristic-api",
-    description="API to create files related to the optimization \
-        problem and perform one of the search algorithm that has pyristic.",
+    description=(
+        "API to create files related to the optimization"
+        "problem and perform one of the search algorithm that has pyristic."
+    ),
     docs_url="/",
-    openapi_tags=settings.OAPI_TAGS,
+    openapi_tags=OAPI_TAGS,
 )
+
+app.include_router(heuristics_router)
+app.include_router(utilities_router)
 
 origins = [
     "http://localhost:3000",
@@ -30,144 +31,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-LOGGER = utils.create_logger(settings.LOGS_FILE)
-
-
-@app.post("/create-file/{file_name}", status_code=200, tags=["Utilities"])
-def create_file_request(file_name: arg_api.FileType, text_content: arg_api.StringInput):
-    """
-    Description:
-        It creates a file with the content.
-    Arguments:
-        - file_name: string indicating the file name where to save the content.
-        - text_content: string with python code. This content is saved as a python file.
-    """
-    try:
-        utils.create_file(file_name, text_content.content)
-        LOGGER.info("Uploaded file %s", file_name)
-    except Exception as exc:
-        error_detail = traceback.format_exc()
-        LOGGER.error(error_detail)
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
-    return f"Created with success {file_name}"
-
-
-@app.post(
-    "/optimize/evolutionary/{optimizer}",
-    status_code=200,
-    dependencies=[
-        Depends(val_api.ValidateFiles(["function", "constraints", "search_space"]))
-    ],
-    tags=["Evolutionary optimization algorithm"],
-)
-def execute_optimizer_request(
-    optimizer: arg_api.EvolutionaryAlgorithm,
-    num_executions: int,
-    arguments_optimizer: arg_api.OptimizerArguments,
-    config_operators: arg_api.EvolutionaryOperators,
-):
-    """
-    Description:
-    This is the route to execute an evolutionary algorithm with the specified configuration
-    specific number of executions.
-    Arguments:
-        - optimizer: the evolutionary algorithm selected.
-        - num_executions: integer number that is the number of times executed the algorithm.
-        - arguments_optimizer: dictionary with the key arguments for the optimize method.
-        - config_operators: dictionary with the operators applied to the algorithm.
-    """
-    try:
-        LOGGER.info("Creating configuration for %s", optimizer)
-        configuration = EA_utils.create_evolutionary_config(
-            optimizer, config_operators.methods
-        )
-        LOGGER.info("\n%s",configuration)
-        evolutionary_algorithm = EA_utils.create_evolutionary_algorithm(
-            optimizer, configuration
-        )
-        LOGGER.info("Execute %s - %s", optimizer, num_executions)
-        statistics_algorithm = utils.transform_values_dict(
-            get_stats(
-                evolutionary_algorithm,
-                num_executions,
-                [],
-                arguments_optimizer.arguments,
-                verbose=True,
-            )
-        )
-        LOGGER.info("End with success.")
-    except Exception as exc:
-        error_detail = traceback.format_exc()
-        LOGGER.error(error_detail)
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-    return JSONResponse(content=statistics_algorithm)
-
-
-@app.post(
-    "/optimize/SimulatedAnnealing",
-    status_code=200,
-    dependencies=[
-        Depends(
-            val_api.ValidateFiles(
-                [
-                    "function",
-                    "constraints",
-                    "SA_neighbor_generator",
-                    "generator_initial_solution",
-                ]
-            )
-        )
-    ],
-    tags=["Combinatorial algorithms"],
-)
-def execute_sa_request(
-    num_executions: int, arguments_optimizer: arg_api.OptimizerArguments
-):
-    """
-    Description:
-        This is the route to execute a search based on Simulated Annealing implemented in pyristic.
-    Arguments:
-        - num_executions: integer number that is the number of times executed the algorithm.
-        - arguments_optimizer: dictionary with the key arguments for the optimize method.
-    """
-    try:
-        LOGGER.info("Starting SA optimization execution")
-        get_initial_solution = utils.ModulesHandler().get_method_by_module(
-            "generator_initial_solution", "generate_initial_solution"
-        )
-        sa_algorithm = SA_utils.create_simulatedannealing_algorithm()
-        LOGGER.info("created SA algorithm")
-        statistics_algorithm = utils.transform_values_dict(
-            get_stats(
-                sa_algorithm,
-                num_executions,
-                [get_initial_solution],
-                arguments_optimizer.arguments,
-                verbose=True,
-            )
-        )
-        LOGGER.info("End with success.")
-    except Exception as exc:
-        error_detail = traceback.format_exc()
-        LOGGER.error(error_detail)
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-    return JSONResponse(content=statistics_algorithm)
-
-
-@app.post("/pyristic/connected", status_code=200)
-def get_verification_response():
-    """
-    Auxiliar function to test the service is working.
-    """
-    return JSONResponse(content={"pyristic": "isAlive"})
-
-
-@app.get("/logs", status_code=200, tags=["Utilities"])
-def get_logs():
-    """
-    Description:
-        Return the logs obtained from the api's.
-    """
-    with open(settings.LOGS_FILE, "r", encoding="utf-8") as log_file:
-        content = log_file.read()
-    return JSONResponse(content={"content": content})
+LOGGER = create_logger(LOGS_FILE)
